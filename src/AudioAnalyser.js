@@ -6,6 +6,7 @@ class AudioAnalyser extends Component {
     super(props);
     this.state = { audioData: new Uint8Array(0) };
     this.tick = this.tick.bind(this);
+    this.nextElapsedUpdate = 0;
   }
 
   componentDidMount() {
@@ -18,9 +19,12 @@ class AudioAnalyser extends Component {
     this.rafId = requestAnimationFrame(this.tick);
   }
 
-  tick() {
-    this.analyser.getByteTimeDomainData(this.dataArray);
-    this.setState({ audioData: this.dataArray });
+  tick(elapsed) {
+    if (elapsed >= this.nextElapsedUpdate) {
+      this.nextElapsedUpdate = elapsed + 50
+      this.analyser.getByteTimeDomainData(this.dataArray);
+      this.setState({ audioData: this.dataArray });
+    }
     this.rafId = requestAnimationFrame(this.tick);
   }
 
